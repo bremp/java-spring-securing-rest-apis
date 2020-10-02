@@ -1,7 +1,6 @@
 package io.jzheaux.springsecurity.resolutions;
 
-import static org.springframework.http.HttpMethod.GET;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -16,17 +15,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 public class ResolutionsApplication extends WebSecurityConfigurerAdapter {
 
-  public static void main(String[] args) {
-    SpringApplication.run(ResolutionsApplication.class, args);
-  }
+  @Autowired
+  UserRepositoryJwtAuthenticationConverter authenticationConverter;
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http
         .authorizeRequests(authz -> authz
             .anyRequest().authenticated())
-        .httpBasic(basic -> {})
-        .cors(cors -> {});
+        .httpBasic(basic -> {
+        })
+        .oauth2ResourceServer(
+            oauth2 -> oauth2.jwt().jwtAuthenticationConverter((this.authenticationConverter)))
+        .cors(cors -> {
+        });
   }
 
   @Bean
@@ -48,4 +50,7 @@ public class ResolutionsApplication extends WebSecurityConfigurerAdapter {
     };
   }
 
+  public static void main(String[] args) {
+    SpringApplication.run(ResolutionsApplication.class, args);
+  }
 }
